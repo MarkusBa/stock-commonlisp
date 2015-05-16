@@ -40,7 +40,7 @@
                      (execute (dao-table-definition 'player))))
 
 (with-connection (connection-spec *db*)
-                   (unless (table-exists-p 'item)
+                   (unless (table-exitss-p 'item)
                      (create-table 'item)))
                    
 (with-connection (connection-spec *db*)
@@ -59,6 +59,14 @@
                                             :ts (simple-date:universal-time-to-timestamp (get-universal-time)))))
 
 
+
+(defun find-items (id-player)
+  (with-connection (connection-spec *db*)
+                   (query (:select :* :from 'item
+                                   :where (:= id-player 'id-player))
+                          :plist)))
+
+
 (defun get-all-symbols (&optional package)
   (let ((lst ())
         (package (find-package package)))
@@ -69,3 +77,5 @@
               (push s lst))
             (push s lst))))
     lst))
+
+
