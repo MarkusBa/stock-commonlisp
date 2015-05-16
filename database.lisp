@@ -27,7 +27,7 @@
    (amount :col-type numeric :reader item-amount :initarg :amount)
    (price :col-type numeric :reader item-price :initarg :price)
    (id-player :col-type integer :reader item-player-id :initarg :id-player)
-   (ts :col-type timestamp :reader item-ts :initarg :ts))
+   (ts :col-type timestamp :reader item-ts :initarg :ts :default :now))
   (:metaclass postmodern:dao-class)
   (:keys id))
 
@@ -43,3 +43,16 @@
                    (unless (table-exists-p 'item)
                      (create-table 'item)))
                    
+(with-connection (connection-spec *db*)
+                 (insert-dao (make-instance 'player
+                                            :name "test"
+                                            :password "test"
+                                            :salt "test"
+                                            :email "test@test.com")))
+
+(with-connection (connection-spec *db*)
+                 (insert-dao (make-instance 'item
+                                            :symbol "CASH"
+                                            :amount 10000
+                                            :price 1
+                                            :id-player 1)))
