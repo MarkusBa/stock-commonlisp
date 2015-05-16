@@ -75,19 +75,26 @@
 
 (defun update-item! (amount symbol id-player)
   (query (:update 'item :set 'amount amount :where  (:and (:= id-player 'id-player)
-                                                (:= symbol 'symbol)))))
+                                                          (:= symbol 'symbol)))))
+
+(defun insert-item! (symbol amount price id-player ts)
+    (execute (:insert-into 'item :set 'symbol symbol 'amount amount 'price price 'id-player id-player 'ts ts)))
 
 
-(defun order (ordersymbol amount price idpl)
+(defun gettime ()
+  (simple-date:universal-time-to-timestamp (get-universal-time)))
+
+(defun order (ordersymbol amount price idplayer)
   (with-connection (connection-spec *db*)
                    (with-transaction
                     (let ((money (existing-amount connection idplayer "CASH"))
-                          (costs (* amount price)))
+                          (costs (* amount price))
+                          (existingamount (existing-amount idplayer ordersymbol)))
                       (when (and (not money) (>= money costs) )
-                        (update-item! connection (- money costs) "CASH" idplayer)
-        (if-let [existingamount (:amount (first (existing-amount connection idplayer ordersymbol)))]
-          (update-item! connection (+ existingamount amount) ordersymbol idplayer)
-          (insert-item! connection ordersymbol amount price idplayer (java.sql.Timestamp. (System/currentTimeMillis))))))))
+                        (update-item! (- money costs) "CASH" idplayer)
+                        (if existingamount
+                            (update-item! (+ existingamount amount) ordersymbol idplayer)
+                            (insert-item! ordersymbol amount price idplayer (gettime))))))))
 
 
 
