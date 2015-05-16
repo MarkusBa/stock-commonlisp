@@ -84,13 +84,15 @@
 (defun gettime ()
   (simple-date:universal-time-to-timestamp (get-universal-time)))
 
+;;(order "BLA" 1 1.5 1)
+
 (defun order (ordersymbol amount price idplayer)
   (with-connection (connection-spec *db*)
                    (with-transaction (transaction)
                     (let ((money (existing-amount idplayer "CASH"))
                           (costs (* amount price))
                           (existingamount (existing-amount idplayer ordersymbol)))
-                      (when (and (not money) (>= money costs) )
+                      (when (>= money costs) 
                         (update-item! (- money costs) "CASH" idplayer)
                         (if existingamount
                             (update-item! (+ existingamount amount) ordersymbol idplayer)
