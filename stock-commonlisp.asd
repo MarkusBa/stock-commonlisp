@@ -6,6 +6,7 @@
   :license "Specify license here"
   :depends-on (#:drakma
                #:postmodern
+               #:simple-date
                #:restas)
   :serial t
   :components ((:file "package")
