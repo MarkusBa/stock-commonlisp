@@ -66,6 +66,32 @@
                                    :where (:= id-player 'id-player))
                           :plist)))
 
+(defun existing-amount (id-player symbol)
+  (with-connection (connection-spec *db*)
+                   (query (:select :amount :from 'item
+                                   :where (:and (:= id-player 'id-player)
+                                                (:= symbol 'symbol)
+                          )):single)))
+
+(defun update-item! (amount symbol id-player)
+  (query (:update 'item :set 'amount amount :where  (:and (:= id-player 'id-player)
+                                                (:= symbol 'symbol)))))
+
+
+(defun order (ordersymbol amount price idpl)
+  (with-connection (connection-spec *db*)
+                   (with-transaction
+                    (let ((money (existing-amount connection idplayer "CASH"))
+                          (costs (* amount price)))
+                      (when (and (not money) (>= money costs) )
+                        (update-item! connection (- money costs) "CASH" idplayer)
+        (if-let [existingamount (:amount (first (existing-amount connection idplayer ordersymbol)))]
+          (update-item! connection (+ existingamount amount) ordersymbol idplayer)
+          (insert-item! connection ordersymbol amount price idplayer (java.sql.Timestamp. (System/currentTimeMillis))))))))
+
+
+
+
 
 (defun get-all-symbols (&optional package)
   (let ((lst ())
