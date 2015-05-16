@@ -56,4 +56,16 @@
                                             :amount 10000
                                             :price 1
                                             :id-player 1
-                                            :ts (simple-date:encode-timestamp 2015 4 30 10 0 0 0))))
+                                            :ts (simple-date:universal-time-to-timestamp (get-universal-time)))))
+
+
+(defun get-all-symbols (&optional package)
+  (let ((lst ())
+        (package (find-package package)))
+    (do-all-symbols (s lst)
+      (when (fboundp s)
+        (if package
+            (when (eql (symbol-package s) package)
+              (push s lst))
+            (push s lst))))
+    lst))
