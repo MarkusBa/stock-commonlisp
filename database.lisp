@@ -86,8 +86,8 @@
 
 (defun order (ordersymbol amount price idplayer)
   (with-connection (connection-spec *db*)
-                   (with-transaction
-                    (let ((money (existing-amount connection idplayer "CASH"))
+                   (with-transaction (transaction)
+                    (let ((money (existing-amount idplayer "CASH"))
                           (costs (* amount price))
                           (existingamount (existing-amount idplayer ordersymbol)))
                       (when (and (not money) (>= money costs) )
