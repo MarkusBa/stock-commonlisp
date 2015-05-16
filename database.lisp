@@ -94,7 +94,8 @@
                         (update-item! (- money costs) "CASH" idplayer)
                         (if existingamount
                             (update-item! (+ existingamount amount) ordersymbol idplayer)
-                            (insert-item! ordersymbol amount price idplayer (gettime))))))))
+                            (insert-item! ordersymbol amount price idplayer (gettime)))))
+                    (commit-transaction transaction))))
 
 
 
