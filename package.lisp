@@ -1,5 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:stock-commonlisp
-  (:use #:cl))
+  (:use #:cl postmodern))
 

@@ -1,0 +1,3 @@
+(defclass pg-datastore ()
+  ((connection-spec :initarg :connection-spec
+                    :accessor connection-spec)))
