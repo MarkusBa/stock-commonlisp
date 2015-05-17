@@ -1,5 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:stock-commonlisp
-  (:use #:cl postmodern simple-date))
+  (:use #:cl postmodern simple-date drakma))
 

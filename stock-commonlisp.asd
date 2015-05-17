@@ -10,5 +10,6 @@
                #:restas)
   :serial t
   :components ((:file "package")
-               (:file "stock-commonlisp")))
+               (:file "stock-commonlisp")
+               (:file "database")))
 

@@ -35,14 +35,15 @@
   (!dao-def)
   (!foreign 'player 'id-player 'id))
 
+#|
 (with-connection (connection-spec *db*)
                    (unless (table-exists-p 'player)
                      (execute (dao-table-definition 'player))))
 
 (with-connection (connection-spec *db*)
-                   (unless (table-exitss-p 'item)
+                   (unless (table-exits-p 'item)
                      (create-table 'item)))
-                   
+
 (with-connection (connection-spec *db*)
                  (insert-dao (make-instance 'player
                                             :name "test"
@@ -57,7 +58,7 @@
                                             :price 1
                                             :id-player 1
                                             :ts (simple-date:universal-time-to-timestamp (get-universal-time)))))
-
+|#
 
 
 (defun find-items (id-player)
@@ -88,7 +89,6 @@
   (simple-date:universal-time-to-timestamp (get-universal-time)))
 
 ;;(order "BLA" 1 1.5 1)
-
 (defun order (ordersymbol amount price idplayer)
   (with-connection (connection-spec *db*)
                    (with-transaction (transaction)
@@ -114,17 +114,20 @@
                              (update-item! (- existingamount amount) sellsymbol idplayer)
                              (delete-item! idplayer sellsymbol)))))))
 
-
-
-(defun get-all-symbols (&optional package)
-  (let ((lst ())
-        (package (find-package package)))
-    (do-all-symbols (s lst)
-      (when (fboundp s)
-        (if package
-            (when (eql (symbol-package s) package)
-              (push s lst))
-            (push s lst))))
-    lst))
+;;http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2000&d=0&e=31&f=2010&g=w&ignore=.csv
+;;(history-from-yahoo "BAS.DE" 0 1 2000 0 31 2010 "w")
+ (defun history-from-yahoo (sym a b c d e f g)
+   (let ((response (drakma:http-request "http://ichart.yahoo.com/table.csv"
+                                 :method :post       
+                                 :parameters `(("s" .  ,sym)
+                                    ("a" . ,a)
+                                    ("b" . ,b)
+                                    ("c" . ,c)
+                                    ("d" . ,d)
+                                    ("e" . ,e)
+                                    ("f" . ,f)
+                                    ("g" . ,g)
+                                    ("ignore" . ".csv")))))
+     response))
 
 
