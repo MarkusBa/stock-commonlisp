@@ -80,6 +80,9 @@
 (defun insert-item! (symbol amount price id-player ts)
     (execute (:insert-into 'item :set 'symbol symbol 'amount amount 'price price 'id-player id-player 'ts ts)))
 
+(defun delete-item! (id-player symbol)
+  (query (:delete-from 'item :where  (:and (:= id-player 'id-player)
+                                           (:= symbol 'symbol)))))
 
 (defun gettime ()
   (simple-date:universal-time-to-timestamp (get-universal-time)))
@@ -99,7 +102,17 @@
                             (insert-item! ordersymbol amount price idplayer (gettime)))))
                     (commit-transaction transaction))))
 
-
+;;(sell "BLA" 1 1.5 1)
+(defun sell (sellsymbol amount price idplayer)
+  (with-connection (connection-spec *db*)
+                   (with-transaction (transaction)                    
+                     (let ((existingamount (existing-amount idplayer sellsymbol))
+                           (existingcash (existing-amount idplayer "CASH")))
+                       (when (and existingamount (>= existingamount amount))
+                         (update-item! (+ existingcash (* amount price)) "CASH" idplayer)
+                         (if (> existingamount amount)
+                             (update-item! (- existingamount amount) sellsymbol idplayer)
+                             (delete-item! idplayer sellsymbol)))))))
 
 
 
